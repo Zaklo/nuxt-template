@@ -1,0 +1,11 @@
+@import './utils/expose-variable';
+@import './utils/register-font';
+@import './utils/hover';
+@import '../vendors/include-media';
+
+$breakpoints: (
+  'phone': var(--tablet),
+  'tablet': var(--laptop),
+  'desktop': var(--desktop),
+  'large-desktop': var(--large-desktop)
+) !default;

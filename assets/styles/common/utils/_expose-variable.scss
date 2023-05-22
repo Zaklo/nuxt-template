@@ -1,0 +1,16 @@
+/**
+ * Expose a CSS variable at the root of the document. 
+ * 
+ * Usage:
+ * @include exposeVariable('header-height', 60px);
+ * 
+ * Output: 
+ * :root {
+ *   --header-height: 60px;
+ * }
+ */
+@mixin exposeVariable($variable, $value) {
+  @at-root :root {
+    --#{$variable}: #{$value};
+  }
+}

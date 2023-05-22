@@ -1,0 +1,101 @@
+@use 'sass:map';
+
+/**
+@include registerFont(
+  (
+    'name': 'Cormorant',
+    'path': '~/assets/fonts/Cormorant/static',
+    'extensions': (
+      'ttf',
+      'woff'
+    ),
+    'styles': (
+      'Regular': (
+        'weight': 300,
+        'style': normal
+      )
+    )
+  )
+);
+
+// => output
+@font-face {
+  font-family: 'Cormorant';
+  src: url('~/assets/fonts/Cormorant/static/Cormorant-Regular.ttf') format('truetype')
+    url('~/assets/fonts/Cormorant/static/Cormorant-Regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 300;
+}
+*/
+
+@function formatFontSrc($path, $extensions) {
+  $src: '';
+  $i: 0;
+  $l: length($extensions) - 1;
+  @each $extension in $extensions {
+    $format: getFormatFromExtension($extension);
+    $src: #{$src} url('#{$path}.#{$extension}') format('#{$format}');
+
+    @if ($i < $l) {
+      $src: #{$src}#{','};
+    }
+    $i: $i + 1;
+  }
+
+  @return $src;
+}
+
+@function getFormatFromExtension($extension) {
+  $format: $extension;
+  @if ($format == 'ttf') {
+    $format: 'truetype';
+  }
+  @if ($format == 'otf') {
+    $format: 'opentype';
+  }
+  @return $format;
+}
+
+@function optFontProperty($options, $property, $default) {
+  $value: $default;
+  @if (map.get($options, $property)) {
+    $value: map.get($options, $property);
+  }
+  @return $value;
+}
+
+@mixin registerFont($font) {
+  $name: map.get($font, 'name');
+  $styles: map.get($font, 'styles');
+  $extensions: map.get($font, 'extensions');
+  $path: map.get($font, 'path');
+  $fileName: map.get($font, 'fileName');
+
+  @if ($extensions == null) {
+    @debug '"extensions" argument is required';
+  }
+  @if ($styles == null) {
+    @debug '"styles" argument is required';
+  }
+  @if ($name == null) {
+    @debug '"name" argument is required';
+  }
+  @if ($path == null) {
+    @debug '"path" argument is required';
+  }
+  @if ($fileName == null) {
+    $fileName: $name;
+  }
+
+  @if ($styles and $path) {
+    @each $style, $options in $styles {
+      @font-face {
+        font-family: '#{$name}';
+        src: formatFontSrc('#{$path}/#{$fileName}-#{$style}', $extensions);
+        font-style: optFontProperty($options, 'style', normal);
+        font-weight: optFontProperty($options, 'weight', normal);
+        font-display: swap;
+      }
+    }
+  }
+}
